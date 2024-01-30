@@ -1,0 +1,51 @@
+0.8x
+Proportion of requested energy delivered: 1.0
+Peak aggregate current: 610.2254545454546 A
+Total Energy delivered: 655.600222888889 kWh
+Total Energy requested: 655.600222888889 kWh
+
+1x 
+Proportion of requested energy delivered: 1.0
+Peak aggregate current: 672.7427556818182 A
+Total Energy delivered: 819.5002786111108 kWh
+Total Energy requested: 819.5002786111108 kWh
+
+1.2x
+Proportion of requested energy delivered: 0.7850653774448374
+Peak aggregate current: 440.8740056818181 A
+Total Energy delivered: 772.0335546527778 kWh
+Total Energy requested: 983.4003343333335 kWh
+
+2x
+Proportion of requested energy delivered: 0.46708313161501575
+Peak aggregate current: 437.1630681818181 A
+Total Energy delivered: 765.5495129861112 kWh
+Total Energy requested: 1639.0005572222217 kWh
+
+...............................
+3 days
+
+1x
+Proportion of requested energy delivered: 0.999911840146438
+Peak aggregate current: 672.7427556818182 A
+Total Energy delivered: 1897.8999452777782 kWh
+Total Energy requested: 1898.0672786111115 kWh
+
+1.1x
+Proportion of requested energy delivered: 0.8568543012347455
+Peak aggregate current: 487.9453125 A
+Total Energy delivered: 1789.0038228819449 kWh
+Total Energy requested: 2087.874006472223 kWh
+
+1.3x
+Proportion of requested energy delivered: 0.7221752046518354
+Peak aggregate current: 487.9453125 A
+Total Energy delivered: 1781.9582629861113 kWh
+Total Energy requested: 2467.487462194445 kWh
+
+0.5x
+Proportion of requested energy delivered: 0.7221752046518354
+Peak aggregate current: 487.9453125 A
+Total Energy delivered: 1781.9582629861113 kWh
+Total Energy requested: 2467.487462194445 kWh
+

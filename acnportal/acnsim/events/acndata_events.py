@@ -1,6 +1,7 @@
 import math
+import copy
 from datetime import datetime
-from ...attack import *
+from ...attacks import *
 from ..models.ev import EV
 from ..models.battery import Battery
 from . import PluginEvent
@@ -8,7 +9,7 @@ from .event_queue import EventQueue
 from acnportal.acndata import DataClient
 
 
-def generate_events(token, site, start, end, period, voltage, max_rate,attack_params = [], **kwargs):
+def generate_events(token, site, start, end, period, voltage, max_rate, attack_params, **kwargs):
     """ Return EventQueue filled using events gathered from the acndata API.
 
     Args:
@@ -18,7 +19,8 @@ def generate_events(token, site, start, end, period, voltage, max_rate,attack_pa
         EventQueue: An EventQueue filled with Events gathered through the acndata API.
 
     """
-    evs = get_evs(token, site, start, end, period, voltage, max_rate, attack_params = [], **kwargs)
+    
+    evs = get_evs(token, site, start, end, period, voltage, max_rate, attack_params, **kwargs)
     events = [PluginEvent(sess.arrival, sess) for sess in evs]
     return EventQueue(events)
 
@@ -31,10 +33,11 @@ def get_evs(
     period,
     voltage,
     max_battery_power,
+    attack_params=[0,1],
     max_len=None,
     battery_params=None,
     force_feasible=False,
-    attack_params = []
+    
 ):
     """ Return a list of EVs gathered from the acndata API.
 
@@ -62,10 +65,32 @@ def get_evs(
     """
     client = DataClient(token)
     docs = client.get_sessions_by_time(site, start, end)
-    docs = fdia_attack(docs, percent_evs_attacked, percent_energy_demanded_change)
+    docs_copy = client.get_sessions_by_time(site, start, end)
+    
+    
+    
+    
+    # Insert/Modify false data
+    percent_evs_attacked = attack_params[0]
+    percent_energy_demanded_change = attack_params[1]
+    
+    attacked_evs = fdia_attack(docs_copy, percent_evs_attacked, percent_energy_demanded_change)
+    
+    
+    
+    
     evs = []
     offset = _datetime_to_timestamp(start, period)
+    
+    ev_index = 1
+    
     for d in docs:
+        
+        if ev_index in attacked_evs:
+            d['kWhDelivered'] *= percent_energy_demanded_change
+            
+        ev_index+=1
+        
         evs.append(
             _convert_to_ev(
                 d,
@@ -78,6 +103,9 @@ def get_evs(
                 force_feasible,
             )
         )
+
+    
+    
     return evs
 
 

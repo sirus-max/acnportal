@@ -110,14 +110,18 @@ site = "caltech"
 cn = acnsim.sites.caltech_acn(basic_evse=True, voltage=voltage)
 
 # -- Attack parameters -------------------------------------------------------------------------------------------------
-percent_evs_attacked  = 0
-percent_energy_demanded_change = 0
-attack_params = [ percent_evs_attacked, percent_energy_demanded_change ]
+percent_evs_attacked  = 50
+energy_demanded_change = 2
+attack_params = [ percent_evs_attacked, energy_demanded_change ]
 
 
 # -- Events ------------------------------------------------------------------------------------------------------------
 API_KEY = "DEMO_TOKEN"
+
 events = acnsim.acndata_events.generate_events(
+    API_KEY, site, start, end, period, voltage, default_battery_power, attack_params=[0,1]
+)
+events2 = acnsim.acndata_events.generate_events(
     API_KEY, site, start, end, period, voltage, default_battery_power, attack_params
 )
 
@@ -133,7 +137,7 @@ sim = acnsim.Simulator(
 sim.run()
 
 # For comparison we will also run the builtin earliest deadline first algorithm
-sim2 = acnsim.Simulator(deepcopy(cn), sch2, deepcopy(events), start, period=period)
+sim2 = acnsim.Simulator(deepcopy(cn), sch, deepcopy(events2), start, period=period)
 sim2.run()
 
 # -- Analysis ----------------------------------------------------------------------------------------------------------
@@ -141,6 +145,26 @@ sim2.run()
 # We see from these plots that our implementation matches th included one quite well. If we look closely however, we
 # might see a small difference. This is because the included algorithm uses a more efficient bisection based method
 # instead of our simpler linear search to find a feasible rate.
+
+
+
+# Print stats:
+print("Normal Charging Stats:")
+print(f"Total energy deliverd:", acnsim.total_energy_delivered(sim))
+print(f"Total energy requested:", acnsim.total_energy_requested(sim))
+print(f"Proportion of demands met:", acnsim.proportion_of_demands_met(sim))
+print(f"Proportion of energy delivered:", acnsim.proportion_of_energy_delivered(sim))
+print(f"Peak current value reached:", sim.peak)
+
+
+print("\n\nUnder Attack Charging Stats:")
+print(f"Total energy delivered:", acnsim.total_energy_delivered(sim2))
+print(f"Total energy requested:", acnsim.total_energy_requested(sim2))
+print(f"Proportion of demands met:", acnsim.proportion_of_demands_met(sim2))
+print(f"Proportion of energy delivered:", acnsim.proportion_of_energy_delivered(sim2))
+print(f"Peak current value reached:", sim2.peak)
+
+
 
 # Get list of datetimes over which the simulations were run.
 sim_dates = mdates.date2num(acnsim.datetimes_array(sim))
@@ -151,12 +175,15 @@ locator = mdates.AutoDateLocator(maxticks=6)
 formatter = mdates.ConciseDateFormatter(locator)
 
 fig, axs = plt.subplots(1, 2, sharey=True, sharex=True)
-axs[0].plot(sim_dates, acnsim.aggregate_current(sim), label="Our EDF")
-axs[1].plot(sim2_dates, acnsim.aggregate_current(sim2), label="Included EDF")
-axs[0].set_title("Our EDF")
-axs[1].set_title("Included EDF")
+axs[0].plot(sim_dates, acnsim.aggregate_current(sim), label="Current", color='green')
+axs[0].plot(sim2_dates, acnsim.aggregate_current(sim2), label="Attacked EDF", color='red')
+axs[0].set_title("Current")
+axs[0].set_ylabel("Current (A)")
+axs[1].plot(sim_dates, acnsim.aggregate_power(sim), label="Power", color='green')
+axs[1].plot(sim2_dates, acnsim.aggregate_power(sim2), label="Attacked EDF", color='red')
+axs[1].set_title("Power")
+axs[1].set_ylabel("Power (kW)")
 for ax in axs:
-    ax.set_ylabel("Current (A)")
     for label in ax.get_xticklabels():
         label.set_rotation(40)
     ax.xaxis.set_major_locator(locator)
