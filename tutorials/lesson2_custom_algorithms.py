@@ -109,10 +109,16 @@ site = "caltech"
 # -- Network -----------------------------------------------------------------------------------------------------------
 cn = acnsim.sites.caltech_acn(basic_evse=True, voltage=voltage)
 
+# -- Attack parameters -------------------------------------------------------------------------------------------------
+percent_evs_attacked  = 0
+percent_energy_demanded_change = 0
+attack_params = [ percent_evs_attacked, percent_energy_demanded_change ]
+
+
 # -- Events ------------------------------------------------------------------------------------------------------------
 API_KEY = "DEMO_TOKEN"
 events = acnsim.acndata_events.generate_events(
-    API_KEY, site, start, end, period, voltage, default_battery_power
+    API_KEY, site, start, end, period, voltage, default_battery_power, attack_params
 )
 
 
