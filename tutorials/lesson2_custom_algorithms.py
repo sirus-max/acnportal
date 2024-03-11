@@ -99,9 +99,9 @@ from acnportal import algorithms
 
 # -- Experiment Parameters ---------------------------------------------------------------------------------------------
 timezone = pytz.timezone("America/Los_Angeles")
-start = timezone.localize(datetime(2018, 9, 5))
-end = timezone.localize(datetime(2018, 9, 6))
-period = 5  # minute
+start = timezone.localize(datetime(2019, 5, 5))
+end = timezone.localize(datetime(2019, 9, 6))
+period = 8 # minute
 voltage = 220  # volts
 default_battery_power = 32 * voltage / 1000  # kW
 site = "caltech"
@@ -110,8 +110,8 @@ site = "caltech"
 cn = acnsim.sites.caltech_acn(basic_evse=True, voltage=voltage)
 
 # -- Attack parameters -------------------------------------------------------------------------------------------------
-percent_evs_attacked  = 50
-energy_demanded_change = 2
+percent_evs_attacked  = 0
+energy_demanded_change = 0
 attack_params = [ percent_evs_attacked, energy_demanded_change ]
 
 
@@ -173,6 +173,17 @@ sim2_dates = mdates.date2num(acnsim.datetimes_array(sim2))
 # Set locator and formatter for datetimes on x-axis.
 locator = mdates.AutoDateLocator(maxticks=6)
 formatter = mdates.ConciseDateFormatter(locator)
+
+
+print(type(acnsim.aggregate_current(sim)))
+
+data = acnsim.aggregate_current(sim)
+
+with open("./data.txt", 'w') as file:
+    # Iterate over the array rows
+    for row in data:
+            print(str(row))
+            file.write(str(row) + '\n')  # Write each entry with a newline
 
 fig, axs = plt.subplots(1, 2, sharey=True, sharex=True)
 axs[0].plot(sim_dates, acnsim.aggregate_current(sim), label="Current", color='green')
